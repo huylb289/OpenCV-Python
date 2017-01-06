@@ -133,10 +133,9 @@ def appendimages(im1, im2):
     # if none of these cases are equal, no filling needed
     return np.concatenate((im1,im2), axis=1)
         
-
 def plot_matches(im1,im2,locs1,locs2,matchscores,show_below=True):
     """ Show a figure with lines joining the accepted matches
-    input: im1,im2 (images as arrays), locs1,locs2 (feature locations),
+    input: im1,im2 (images as arrays), locs1,locs2 (location of features),
     matchscores (as output from 'match()'),
     show_below (if images should be shown below matches). """
 
@@ -148,7 +147,7 @@ def plot_matches(im1,im2,locs1,locs2,matchscores,show_below=True):
         cols1 = im1.shape[1]
         for i, m in enumerate(matchscores):
             if m > 0:
-                plt.plot([locs1[i][1], locs2[m][1] + cols1],\
-                        [locs1[i][0], locs2[m][0]], 'c')
+                plt.plot([locs1[i][0], locs2[m][0] + cols1],\
+                        [locs1[i][1], locs2[m][1]], 'c')
 
         plt.axis('off')
