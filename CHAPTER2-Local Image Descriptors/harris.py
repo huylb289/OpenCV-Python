@@ -104,11 +104,57 @@ def match(desc1, desc2, threshold=0.5):
 
     return matchscores
 
+##New function: we need to define the maximum pixel distance between points for them
+##to be consedered as correspondences
+def match(desc1, desc2, threshold=0.5, maximumPixelDistance=5):
+    """ For each corner point descriptor in the first image,
+    select its match to second image using
+    normalized cross-correlation. """
+
+    n = len(desc1[0])
+
+    # pair-wise distances
+    d = - np.ones((len(desc1),len(desc2)))
+    for i in range(len(desc1)):
+        # Create -5 -4 -3 -2 -1 0 1 2 3 4 range distance
+        for j in range(i - maximumPixelDistance, i + maximumPixelDistance, 1):
+            try:
+                d1 = (desc1[i] - np.mean(desc1[i])) / np.std(desc1[i])
+                d2 = (desc2[j] - np.mean(desc2[j])) / np.std(desc2[j])
+                ncc_value = np.sum(d1 * d2) / (n-1)
+                if ncc_value > threshold:
+##                    print ("Bingo")
+                    d[i,j] = ncc_value
+            except IndexError:
+##                print ("Some index error")
+                continue
+
+    # sort DESC
+    ndx = np.argsort(-d)
+    matchscores = ndx[:,0]
+
+    return matchscores
+
 def match_twosided(desc1, desc2, threshold=0.5):
     """ Two-sided symetric version of match()."""
 
     matches_12 = match(desc1,desc2, threshold)
     matches_21 = match(desc2,desc1, threshold)
+    ndx_12 = np.where(matches_12 >= 0)[0]
+
+    # remove matches that are not symetric
+    for n in ndx_12:
+        if matches_21[matches_12[n]] != n:
+            matches_12[n] = -1
+
+    return matches_12
+
+##New function: match 2 sided with maximum pixel
+def match_twosided(desc1, desc2, threshold=0.5, maximumPixelDistance=5):
+    """ Two-sided symetric version of match()."""
+
+    matches_12 = match(desc1,desc2, threshold, maximumPixelDistance)
+    matches_21 = match(desc2,desc1, threshold, maximumPixelDistance)
     ndx_12 = np.where(matches_12 >= 0)[0]
 
     # remove matches that are not symetric

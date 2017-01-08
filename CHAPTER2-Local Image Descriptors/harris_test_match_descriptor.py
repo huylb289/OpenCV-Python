@@ -17,8 +17,17 @@ harrisim = harris.compute_harris_response(im2,5)
 filtered_coords2 = harris.get_harris_points(harrisim,wid+1)
 d2 = harris.get_descriptors(im2,filtered_coords2,wid)
 
+##print ('starting matching')
+##matches = harris.match_twosided(d1,d2,threshold=0.5)
+##plt.figure()
+##plt.gray()
+##harris.plot_matches(im1,im2,filtered_coords1,filtered_coords2,matches)
+##plt.show()
+
+
+##Testing with maximumPixelDistance
 print ('starting matching')
-matches = harris.match_twosided(d1,d2)
+matches = harris.match_twosided(d1,d2,threshold=0.1, maximumPixelDistance=5)
 plt.figure()
 plt.gray()
 harris.plot_matches(im1,im2,filtered_coords1,filtered_coords2,matches)
